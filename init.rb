@@ -7,6 +7,8 @@ Redmine::Plugin.register :redmine_tasks_ics_subscription do
   author      'Wolfgang Grim'
   description 'Exposes assigned Redmine issues as a read-only ICS feed (VTODO and VEVENT)'
   version     '1.0.0'
+  url         'https://github.com/coldib/redmine-tasks-ics-subscription'
+  author_url  'https://github.com/coldib'
   settings :default => {
              'all_projects'                 => '0',
              'project_ids'                  => [],

@@ -17,7 +17,7 @@ A Redmine plugin that exposes assigned issues as a read-only ICS feed. Each user
 
 ## Client compatibility
 
-| Client | VTODO (`todos.ics`) | VEVENT (`events.ics`) | Shown as | Auth |
+| Client | VTODO (`redmine-tasks.ics`) | VEVENT (`redmine-events.ics`) | Shown as | Auth |
 |---|---|---|---|---|
 | **Thunderbird** | ✅ | ✅ | VTODO → Task list / VEVENT → Calendar | `?key=` in URL (see below) |
 | **iOS** | ✅ | ✅ | VTODO → Reminders / VEVENT → Calendar | Credentials on subscribe |
@@ -106,7 +106,7 @@ https://your-redmine-host/caldav_tasks/redmine-events.ics?key=YOUR_API_KEY   ←
 **Thunderbird**
 1. Calendar → New Calendar → On the Network
 2. Enter the URL with `?key=YOUR_API_KEY` appended — no credentials dialog will appear
-3. Use `todos.ics?key=…` for the task list, `events.ics?key=…` for calendar view
+3. Use `redmine-tasks.ics?key=…` for the task list, `redmine-events.ics?key=…` for calendar view
 
 **Outlook 2016 / 2019 / 365**
 1. File → Account Settings → Internet Calendars → New
