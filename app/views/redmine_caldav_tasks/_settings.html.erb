@@ -1,0 +1,77 @@
+<%
+  all_projects = Project.active.order(:lft)
+  settings_project_ids                  = Array(@settings['project_ids']).map(&:to_i)
+  settings_project_ids_with_subprojects = Array(@settings['project_ids_with_subprojects']).map(&:to_i)
+%>
+
+<div style="margin-top:10px;"></div>
+
+<fieldset>
+  <legend><%= l(:label_caldav_tasks_subscription_url) %></legend>
+  <p class="description"><%= l(:label_caldav_tasks_subscription_hint) %></p>
+  <p>
+    <strong><%= l(:label_caldav_tasks_url_example) %></strong><br/>
+    <code>webcal://<%= request.host_with_port %>/caldav_tasks/todos.ics</code>
+  </p>
+  <p class="description">
+    <%= l(:label_caldav_tasks_auth_hint) %>
+    <%= link_to l(:label_caldav_tasks_my_account), my_account_path %>
+    <%= l(:label_caldav_tasks_auth_hint_suffix) %>
+  </p>
+</fieldset>
+
+<div style="margin-top:10px;"></div>
+
+<fieldset>
+  <legend><%= l(:label_caldav_tasks_project_selection) %></legend>
+
+  <p>
+    <%= label_tag 'settings[open_issues_only]', l(:label_caldav_tasks_open_issues_only) %>
+    <%= check_box_tag 'settings[open_issues_only]', '1', @settings['open_issues_only'] == '1' %>
+  </p>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th style="text-align:left; padding:4px 8px;"><%= l(:label_caldav_tasks_project) %></th>
+        <th style="text-align:center; padding:4px 8px;" title="<%= l(:label_caldav_tasks_exact_hint) %>">
+          <%= l(:label_caldav_tasks_include_exact) %>
+        </th>
+        <th style="text-align:center; padding:4px 8px;" title="<%= l(:label_caldav_tasks_subprojects_hint) %>">
+          <%= l(:label_caldav_tasks_include_with_subprojects) %>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% all_projects.each do |project| %>
+        <%
+          depth = project.depth
+          indent = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth
+          exact_checked   = settings_project_ids.include?(project.id)
+          sub_checked     = settings_project_ids_with_subprojects.include?(project.id)
+        %>
+        <tr style="<%= cycle('background:#f8f8f8', 'background:#fff') %>">
+          <td style="padding:3px 8px;">
+            <%= indent.html_safe %><%= project.name %>
+          </td>
+          <td style="text-align:center; padding:3px 8px;">
+            <%= check_box_tag 'settings[project_ids][]',
+                              project.id,
+                              exact_checked,
+                              id: "project_exact_#{project.id}" %>
+          </td>
+          <td style="text-align:center; padding:3px 8px;">
+            <%= check_box_tag 'settings[project_ids_with_subprojects][]',
+                              project.id,
+                              sub_checked,
+                              id: "project_sub_#{project.id}" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <p class="description" style="margin-top:8px;">
+    <%= l(:label_caldav_tasks_selection_hint) %>
+  </p>
+</fieldset>

@@ -1,0 +1,19 @@
+en:
+  label_caldav_tasks_subscription_url: Subscription URL
+  label_caldav_tasks_subscription_hint: >
+    Use this URL to subscribe to your Redmine tasks in Outlook, iOS or Android.
+    The client will prompt for credentials — enter your API key as the username.
+  label_caldav_tasks_url_example: "Subscription URL:"
+  label_caldav_tasks_auth_hint: "Authentication via HTTP Basic Auth: API key as username, any password. Find your API key under"
+  label_caldav_tasks_auth_hint_suffix: "(section \"API access key\")."
+  label_caldav_tasks_my_account: My Account
+  label_caldav_tasks_project_selection: Project Selection
+  label_caldav_tasks_open_issues_only: Export open issues only
+  label_caldav_tasks_project: Project
+  label_caldav_tasks_include_exact: This project only
+  label_caldav_tasks_include_with_subprojects: Incl. subprojects
+  label_caldav_tasks_exact_hint: Include only issues directly in this project
+  label_caldav_tasks_subprojects_hint: Include issues in this project and all its subprojects
+  label_caldav_tasks_selection_hint: >
+    For each project you can choose whether to include only the project itself or also
+    all subprojects. Users will only see issues assigned to them.
