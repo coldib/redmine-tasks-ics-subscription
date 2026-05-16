@@ -1,32 +1,30 @@
 # Redmine Tasks ICS Subscription
 
-A Redmine plugin that exposes assigned issues as a read-only ICS feed, compatible with any calendar client that supports iCalendar subscriptions (Thunderbird, iOS, Android, Outlook).
+A Redmine plugin that exposes assigned issues as a read-only ICS feed. Each user gets a personal calendar subscription showing only their own assigned issues.
+
+> **Note:** This is a read-only ICS subscription feed, **not** a CalDAV server. Subscribe using the "Internet Calendar" or "ICS subscription" option in your client — not as a CalDAV account.
 
 ---
 
-## Overview
+## Endpoints
 
-This plugin adds two unauthenticated-from-the-browser, API-key-protected HTTP endpoints to your Redmine instance:
-
-| Endpoint | Format | Best for |
+| Endpoint | Format | Use when |
 |---|---|---|
-| `/caldav_tasks/todos.ics?key=API_KEY` | VTODO | Thunderbird (key in URL, no auth dialog) |
-| `/caldav_tasks/todos.ics` | VTODO | iOS, Android (credentials on subscribe) |
-| `/caldav_tasks/events.ics` | VEVENT (all-day) | Outlook 2016+ |
-
-Each user sees only their own assigned issues from the projects configured in the plugin settings.
-
-> **Note:** This is a read-only ICS subscription feed, **not** a CalDAV server. Clients that use CalDAV protocol methods (PROPFIND, PUT, DELETE, etc.) will receive errors. Subscribe using the "Internet Calendar" or "ICS subscription" option in your client — not as a CalDAV account.
+| `/caldav_tasks/todos.ics` | VTODO | Client supports tasks/reminders (Thunderbird, iOS, Android) |
+| `/caldav_tasks/events.ics` | VEVENT (all-day) | Client only shows calendar events (Outlook) |
 
 ---
 
-## Why two endpoints?
+## Client compatibility
 
-**Thunderbird, iOS, Android** natively support VTODO (the iCalendar task format) and display subscribed tasks in their task/reminder views.
+| Client | VTODO (`todos.ics`) | VEVENT (`events.ics`) | Shown as | Auth |
+|---|---|---|---|---|
+| **Thunderbird** | ✅ | ✅ | VTODO → Task list / VEVENT → Calendar | `?key=` in URL (see below) |
+| **iOS** | ✅ | ✅ | VTODO → Reminders / VEVENT → Calendar | Credentials on subscribe |
+| **Android** (ICSx⁵) | ✅ | ✅ | VTODO → Tasks / VEVENT → Calendar | Credentials on subscribe |
+| **Outlook 2016+** | ❌ silently ignored | ✅ | VEVENT → Calendar events | Credentials on subscribe |
 
-**Outlook 2016+** silently ignores VTODO entries in ICS subscriptions. It only renders VEVENT (calendar events). The `/caldav_tasks/events.ics` endpoint works around this by outputting issues as all-day calendar events placed on their due date.
-
-> **Important:** Issues without a due date are **never returned** by the `events.ics` endpoint. If an issue does not appear in Outlook, check that it has a due date set in Redmine.
+> **Outlook note:** Outlook ignores VTODO entries in ICS subscriptions entirely. Use `events.ics` instead. Only issues with a due date appear — issues without a due date are never returned by this endpoint.
 
 ---
 
@@ -34,22 +32,18 @@ Each user sees only their own assigned issues from the projects configured in th
 
 - Redmine 6.x (tested; other versions may work but are untested)
 - Ruby 2.7+
-- REST API must be enabled in Redmine (Administration → Settings → API → Enable REST web service)
+- REST API enabled: Administration → Settings → API → Enable REST web service
 
 ---
 
 ## Installation
 
-1. Clone or copy the plugin into your Redmine plugins directory:
+```bash
+cd /path/to/redmine/plugins
+git clone https://github.com/coldib/redmine-tasks-ics-subscription.git redmine_tasks_ics_subscription
+```
 
-   ```bash
-   cd /path/to/redmine/plugins
-   git clone https://github.com/coldib/redmine-tasks-ics-subscription.git redmine_tasks_ics_subscription
-   ```
-
-2. Restart Redmine.
-
-3. Go to **Administration → Plugins** and click **Configure** next to _Redmine Tasks ICS Subscription_.
+Restart Redmine, then go to **Administration → Plugins → Configure** next to _Redmine Tasks ICS Subscription_.
 
 ---
 
@@ -61,13 +55,11 @@ Open **Administration → Plugins → Redmine Tasks ICS Subscription → Configu
 
 | Option | Behaviour |
 |---|---|
-| **Include all projects** | Subscribes to all active projects the user has access to. New projects are included automatically. |
-| **This project only** | Includes issues from exactly that project. |
-| **Incl. subprojects** | Includes issues from that project and all its descendants. New subprojects are included automatically. |
+| **Include all projects** | All active projects the user has access to. Future projects included automatically. |
+| **This project only** | Issues from exactly that project. |
+| **Incl. subprojects** | Issues from that project and all descendants. New subprojects included automatically. |
 
-Options can be combined. A project that appears in both columns is included once.
-
-**Open issues only** — when checked, closed issues are excluded from both feeds.
+Options can be combined. **Open issues only** — when checked, closed issues are excluded from both feeds.
 
 ---
 
@@ -75,18 +67,20 @@ Options can be combined. A project that appears in both columns is included once
 
 ### Step 1 — Get your API key
 
-Go to **My account** (top-right menu) → scroll to **API access key** → show and copy the key.
+**My account** (top-right) → **API access key** → show and copy.
 
-### Step 2 — Subscribe in your client
+### Step 2 — Choose your URL and auth method
 
-Use one of the URLs shown on the plugin configuration page:
+#### Standard (iOS, Android, Outlook)
+
+Enter the URL in your client — it will prompt for credentials:
 
 ```
-https://your-redmine-host/caldav_tasks/todos.ics   ← Thunderbird, iOS, Android
-https://your-redmine-host/caldav_tasks/events.ics  ← Outlook
+https://your-redmine-host/caldav_tasks/todos.ics    ← iOS, Android (tasks/reminders)
+https://your-redmine-host/caldav_tasks/events.ics   ← Outlook (calendar events)
 ```
 
-When your client asks for credentials, use **any** of these combinations:
+Any of these credential combinations work:
 
 | Username | Password |
 |---|---|
@@ -96,45 +90,64 @@ When your client asks for credentials, use **any** of these combinations:
 
 The `X-Redmine-API-Key` HTTP header is also accepted for programmatic access.
 
-### Thunderbird / clients without an HTTP auth dialog
+#### Thunderbird (key in URL)
 
-Some clients (notably Thunderbird) perform CalDAV discovery before fetching the ICS file and never present an HTTP credentials dialog. For these clients, embed the API key directly in the URL as a `key` query parameter — no credentials dialog required:
+Thunderbird performs CalDAV discovery before fetching the ICS file and never presents an HTTP credentials dialog. Embed the API key directly in the URL:
 
 ```
-https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY
-https://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY
+https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY    ← Task list
+https://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY   ← Calendar view
 ```
 
-> **Security note:** HTTPS encrypts the URL in transit — the key is not visible to network observers. It does however appear in server-side access logs (nginx, Puma). Treat this URL like a password and do not share it.
+> **Security:** HTTPS encrypts the URL in transit — the key is not visible to network observers. It does however appear in server-side access logs (nginx, Puma). Treat this URL like a password and do not share it.
 
-### Client-specific instructions
+### Client-specific steps
 
 **Thunderbird**
 1. Calendar → New Calendar → On the Network
-2. Enter the URL **with your API key embedded**:
-   `https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY`
-3. No credentials dialog needed
-
-> Thunderbird performs CalDAV discovery (PROPFIND) before fetching the ICS file and does not send HTTP credentials automatically. Embedding the API key in the URL bypasses this problem.
+2. Enter the URL with `?key=YOUR_API_KEY` appended — no credentials dialog will appear
+3. Use `todos.ics?key=…` for the task list, `events.ics?key=…` for calendar view
 
 **Outlook 2016 / 2019 / 365**
 1. File → Account Settings → Internet Calendars → New
-2. Enter the `events.ics` URL → Subscribe
-3. Enter credentials in the next dialog
+2. Enter the `events.ics` URL → Subscribe → enter credentials
 
 **iOS (iPhone / iPad)**
 1. Settings → Calendar → Accounts → Add Account → Other → Add Subscribed Calendar
 2. Enter the `todos.ics` URL → Next → enter credentials
 
-**Android (e.g. with ICSx⁵ / DAVx⁵)**
-1. Open ICSx⁵ → + → URL
-2. Enter the `todos.ics` URL and credentials
+**Android (ICSx⁵)**
+1. ICSx⁵ → + → URL → enter the `todos.ics` URL and credentials
 
-**curl (testing)**
+---
+
+## Testing with curl
+
+Basic fetch (API key as Basic Auth username):
 ```bash
 curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/todos.ics
 curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/events.ics
 ```
+
+With API key as URL parameter (Thunderbird method):
+```bash
+curl "https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY"
+```
+
+Verbose output for debugging (shows headers, TLS handshake, response):
+```bash
+curl -v -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/todos.ics
+```
+
+Check response headers only:
+```bash
+curl -I -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/todos.ics
+```
+
+Expected responses:
+- `HTTP/1.1 200 OK` + `Content-Type: text/calendar` → working correctly
+- `HTTP/1.1 401 Unauthorized` → wrong or missing credentials
+- `HTTP/1.1 200 OK` with empty calendar (only headers, no VTODO/VEVENT) → no projects configured or no assigned issues
 
 ---
 
@@ -162,7 +175,7 @@ curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/events.ics
 |---|---|
 | `UID` | `redmine-issue-{id}-event@{host}` |
 | `SUMMARY` | `#{id} {subject}` |
-| `DTSTART` / `DTEND` | Due date (all-day event; DTEND = due date + 1 day per RFC 5545) |
+| `DTSTART` / `DTEND` | Due date (all-day; DTEND = due date + 1 day per RFC 5545) |
 | `STATUS` | `TENTATIVE` / `CONFIRMED` / `CANCELLED` |
 | `URL` | Full URL to the issue |
 | `DESCRIPTION` | Issue URL + description body |
@@ -175,9 +188,9 @@ All text fields are escaped and line-folded per [RFC 5545 §3.1](https://datatra
 
 ## Security
 
-- All endpoints require authentication. Unauthenticated requests receive `401 Unauthorized` with a `WWW-Authenticate: Basic` challenge.
+- All endpoints require authentication. Unauthenticated requests receive `401 Unauthorized`.
 - Each user sees only issues **assigned to them** and only from projects they have permission to view.
-- The `all_projects` mode uses `Project.visible(current_user)` — hidden projects are never exposed.
+- `all_projects` mode uses `Project.visible(current_user)` — hidden projects are never exposed.
 - CSRF protection is intentionally disabled on these endpoints (stateless API, no session cookies).
 
 ---
