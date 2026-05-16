@@ -19,6 +19,11 @@
     <strong><%= l(:label_caldav_tasks_url_example) %></strong><br/>
     <code>webcal://<%= request.host_with_port %>/caldav_tasks/todos.ics</code>
   </p>
+  <p>
+    <strong><%= l(:label_caldav_tasks_events_url_example) %></strong><br/>
+    <code>webcal://<%= request.host_with_port %>/caldav_tasks/events.ics</code><br/>
+    <span class="description"><%= l(:label_caldav_tasks_events_hint) %></span>
+  </p>
   <p class="description">
     <%= l(:label_caldav_tasks_auth_hint) %>
     <%= link_to l(:label_caldav_tasks_my_account), my_account_path %>

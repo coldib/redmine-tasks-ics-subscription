@@ -14,6 +14,8 @@ en:
   label_caldav_tasks_include_with_subprojects: Incl. subprojects
   label_caldav_tasks_exact_hint: Include only issues directly in this project
   label_caldav_tasks_subprojects_hint: Include issues in this project and all its subprojects
+  label_caldav_tasks_events_url_example: "Outlook calendar URL (all-day events by due date):"
+  label_caldav_tasks_events_hint: "For Outlook only — shows tasks with a due date as all-day events in the calendar view."
   label_caldav_tasks_selection_hint: >
     For each project you can choose whether to include only the project itself or also
     all subprojects. Users will only see issues assigned to them.

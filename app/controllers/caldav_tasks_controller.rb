@@ -9,13 +9,34 @@ class CaldavTasksController < ApplicationController
   before_action :authenticate_via_api_key
 
   def todos
+    issues = load_issues
+    return if issues.nil?
+
+    ics = RedmineTasksIcsSubscription::IcsBuilder.new(issues, request.host).build
+
+    response.headers['Content-Disposition'] = 'attachment; filename="redmine-tasks.ics"'
+    render plain: ics, content_type: 'text/calendar; charset=utf-8'
+  end
+
+  def events
+    issues = load_issues
+    return if issues.nil?
+
+    ics = RedmineTasksIcsSubscription::IcsBuilder.new(issues, request.host).build_events
+
+    response.headers['Content-Disposition'] = 'attachment; filename="redmine-tasks-events.ics"'
+    render plain: ics, content_type: 'text/calendar; charset=utf-8'
+  end
+
+  private
+
+  def load_issues
     settings = Setting.plugin_redmine_tasks_ics_subscription
 
     project_ids                  = Array(settings['project_ids']).map(&:to_i).reject(&:zero?)
     project_ids_with_subprojects = Array(settings['project_ids_with_subprojects']).map(&:to_i).reject(&:zero?)
     open_issues_only             = settings['open_issues_only'] == '1'
 
-    # Collect all relevant project IDs, expanding subproject trees where configured
     all_project_ids = Set.new
 
     if project_ids.any?
@@ -34,7 +55,7 @@ class CaldavTasksController < ApplicationController
 
     if all_project_ids.empty?
       render plain: empty_calendar, content_type: 'text/calendar; charset=utf-8'
-      return
+      return nil
     end
 
     issues = Issue
@@ -44,14 +65,8 @@ class CaldavTasksController < ApplicationController
                .includes(:project, :tracker, :priority, :status)
 
     issues = issues.open if open_issues_only
-
-    ics = RedmineTasksIcsSubscription::IcsBuilder.new(issues, request.host).build
-
-    response.headers['Content-Disposition'] = 'attachment; filename="redmine-tasks.ics"'
-    render plain: ics, content_type: 'text/calendar; charset=utf-8'
+    issues
   end
-
-  private
 
   def authenticate_via_api_key
     user = find_user_from_request

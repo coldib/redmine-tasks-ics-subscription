@@ -32,6 +32,25 @@ module RedmineTasksIcsSubscription
       lines.join("\r\n") + "\r\n"
     end
 
+    def build_events
+      lines = []
+      lines << 'BEGIN:VCALENDAR'
+      lines << 'VERSION:2.0'
+      lines << "PRODID:-//Redmine CalDAV Tasks Plugin//EN"
+      lines << 'CALSCALE:GREGORIAN'
+      lines << 'METHOD:PUBLISH'
+      lines << 'X-WR-CALNAME:Redmine Tasks'
+      lines << 'X-WR-TIMEZONE:UTC'
+
+      @issues.each do |issue|
+        next unless issue.due_date.present?
+        lines += vevent_lines(issue)
+      end
+
+      lines << 'END:VCALENDAR'
+      lines.join("\r\n") + "\r\n"
+    end
+
     private
 
     def vtodo_lines(issue)
@@ -61,6 +80,42 @@ module RedmineTasksIcsSubscription
       lines << "COMMENT:#{escape_text(issue.project.name)}"
       lines << 'END:VTODO'
       lines
+    end
+
+    def vevent_lines(issue)
+      lines = []
+      lines << 'BEGIN:VEVENT'
+      lines << "UID:redmine-issue-#{issue.id}-event@#{@host}"
+      lines << "DTSTAMP:#{format_datetime(Time.now.utc)}"
+      lines << "LAST-MODIFIED:#{format_datetime(issue.updated_on.utc)}"
+      lines << "CREATED:#{format_datetime(issue.created_on.utc)}"
+      lines << "SUMMARY:#{escape_text("##{issue.id} #{issue.subject}")}"
+      lines << "DTSTART;VALUE=DATE:#{format_date(issue.due_date)}"
+      lines << "DTEND;VALUE=DATE:#{format_date(issue.due_date + 1)}"
+      lines << "STATUS:#{vevent_status(issue)}"
+      lines << "URL:#{issue_url(issue)}"
+
+      if issue.description.present?
+        description = "#{issue_url(issue)}\\n\\n#{issue.description}"
+        lines << "DESCRIPTION:#{escape_text(description)}"
+      else
+        lines << "DESCRIPTION:#{issue_url(issue)}"
+      end
+
+      lines << "CATEGORIES:#{escape_text(issue.tracker.name)}"
+      lines << "COMMENT:#{escape_text(issue.project.name)}"
+      lines << 'END:VEVENT'
+      lines
+    end
+
+    def vevent_status(issue)
+      if issue.closed?
+        'CANCELLED'
+      elsif issue.done_ratio > 0
+        'CONFIRMED'
+      else
+        'TENTATIVE'
+      end
     end
 
     def vtodo_status(issue)

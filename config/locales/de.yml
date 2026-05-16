@@ -14,6 +14,8 @@ de:
   label_caldav_tasks_include_with_subprojects: Inkl. Unterprojekte
   label_caldav_tasks_exact_hint: Nur Aufgaben direkt in diesem Projekt einschließen
   label_caldav_tasks_subprojects_hint: Aufgaben in diesem Projekt und allen Unterprojekten einschließen
+  label_caldav_tasks_events_url_example: "Outlook-Kalender-URL (Ganztagesereignisse nach Fälligkeit):"
+  label_caldav_tasks_events_hint: "Nur für Outlook – zeigt Aufgaben mit Fälligkeitsdatum als Ganztagesereignisse im Kalender an."
   label_caldav_tasks_selection_hint: >
     Sie können für jedes Projekt wählen, ob nur das Projekt selbst oder auch alle
     Unterprojekte eingeschlossen werden sollen. Benutzer sehen nur ihnen zugewiesene Aufgaben.
