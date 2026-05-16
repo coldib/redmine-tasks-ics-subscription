@@ -20,7 +20,7 @@
     &#9888; <%= l(:label_caldav_tasks_caldav_warning) %>
   </p>
 
-  <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+  <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
     <thead>
       <tr style="background:#eee;">
         <th style="text-align:left; padding:5px 8px;"><%= l(:label_caldav_tasks_client_column) %></th>
@@ -47,6 +47,8 @@
     </tbody>
   </table>
 
+  <p class="description" style="margin-bottom:12px;">&#9888; <%= l(:label_caldav_tasks_auth_token_warning) %></p>
+
   <p style="margin-bottom:4px;"><strong><%= l(:label_caldav_tasks_auth_title) %></strong></p>
   <ol style="margin:0 0 4px 20px;">
     <li>
@@ -63,16 +65,6 @@
       </ul>
     </li>
   </ol>
-
-  <p style="margin:12px 0 4px 0;"><strong><%= l(:label_caldav_tasks_auth_token_title) %></strong></p>
-  <p class="description" style="margin-bottom:4px;"><%= l(:label_caldav_tasks_auth_token_hint) %></p>
-  <p style="margin:2px 0;">
-    <code>https://<%= request.host_with_port %>/caldav_tasks/todos.ics?key=<em>API_KEY</em></code>
-  </p>
-  <p style="margin:2px 0;">
-    <code>https://<%= request.host_with_port %>/caldav_tasks/events.ics?key=<em>API_KEY</em></code>
-  </p>
-  <p class="description" style="margin-top:4px;">&#9888; <%= l(:label_caldav_tasks_auth_token_warning) %></p>
 </fieldset>
 
 <div style="margin-top:10px;"></div>

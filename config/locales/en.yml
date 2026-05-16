@@ -10,7 +10,8 @@ en:
   label_caldav_tasks_row_thunderbird: Thunderbird
   label_caldav_tasks_row_thunderbird_note: >
     Task feed (VTODO). Thunderbird does not present an HTTP auth dialog —
-    embed the API key directly in the URL (see below).
+    embed the API key directly in the URL. For calendar view instead of tasks,
+    use events.ics?key=API_KEY.
   label_caldav_tasks_row_ios_android: iOS / Android
   label_caldav_tasks_row_ios_android_note: >
     Task feed (VTODO) – displays all assigned issues as tasks.
@@ -27,10 +28,8 @@ en:
   label_caldav_tasks_auth_step2_a: "Username = API key, Password = anything (e.g. x)"
   label_caldav_tasks_auth_step2_b: "Username = Redmine login, Password = API key"
   label_caldav_tasks_auth_step2_c: "Username = Redmine login, Password = Redmine password"
-  label_caldav_tasks_auth_token_title: "Thunderbird / Clients without HTTP auth dialog"
-  label_caldav_tasks_auth_token_hint: >
-    Some clients (e.g. Thunderbird) do not send HTTP credentials when subscribing.
-    In that case, embed the API key directly in the URL:
+  label_caldav_tasks_auth_token_title: ""
+  label_caldav_tasks_auth_token_hint: ""
   label_caldav_tasks_auth_token_warning: >
     HTTPS encrypts the URL in transit — the key is not visible to network observers.
     However, it does appear in server-side access logs (nginx, Puma).

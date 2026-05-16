@@ -10,7 +10,8 @@ de:
   label_caldav_tasks_row_thunderbird: Thunderbird
   label_caldav_tasks_row_thunderbird_note: >
     Aufgaben-Feed (VTODO). Thunderbird sendet keinen HTTP-Auth-Dialog —
-    API-Schlüssel direkt in die URL einbauen (siehe unten).
+    API-Schlüssel direkt in die URL einbauen. Für Kalenderansicht statt Aufgaben
+    events.ics?key=API_KEY verwenden.
   label_caldav_tasks_row_ios_android: iOS / Android
   label_caldav_tasks_row_ios_android_note: >
     Aufgaben-Feed (VTODO) – zeigt alle zugewiesenen Issues als Aufgaben an.
@@ -27,10 +28,8 @@ de:
   label_caldav_tasks_auth_step2_a: "Benutzername = API-Schlüssel, Passwort = beliebig (z. B. x)"
   label_caldav_tasks_auth_step2_b: "Benutzername = Redmine-Login, Passwort = API-Schlüssel"
   label_caldav_tasks_auth_step2_c: "Benutzername = Redmine-Login, Passwort = Redmine-Passwort"
-  label_caldav_tasks_auth_token_title: "Thunderbird / Clients ohne HTTP-Auth-Dialog"
-  label_caldav_tasks_auth_token_hint: >
-    Manche Clients (z. B. Thunderbird) senden beim Abonnieren keine HTTP-Zugangsdaten.
-    In diesem Fall den API-Schlüssel direkt in die URL einbauen:
+  label_caldav_tasks_auth_token_title: ""
+  label_caldav_tasks_auth_token_hint: ""
   label_caldav_tasks_auth_token_warning: >
     HTTPS verschlüsselt die URL im Netzwerk — der Key ist für Außenstehende nicht sichtbar.
     Er erscheint jedoch in server-seitigen Access-Logs (nginx, Puma).
