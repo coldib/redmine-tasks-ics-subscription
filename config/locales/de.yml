@@ -7,9 +7,14 @@ de:
   label_caldav_tasks_client_column: Client
   label_caldav_tasks_url_column: Abonnement-URL
   label_caldav_tasks_note_column: Hinweis
-  label_caldav_tasks_row_tasks: Thunderbird, iOS, Android
-  label_caldav_tasks_row_tasks_note: >
+  label_caldav_tasks_row_thunderbird: Thunderbird
+  label_caldav_tasks_row_thunderbird_note: >
+    Aufgaben-Feed (VTODO). Thunderbird sendet keinen HTTP-Auth-Dialog —
+    API-Schlüssel direkt in die URL einbauen (siehe unten).
+  label_caldav_tasks_row_ios_android: iOS / Android
+  label_caldav_tasks_row_ios_android_note: >
     Aufgaben-Feed (VTODO) – zeigt alle zugewiesenen Issues als Aufgaben an.
+    Zugangsdaten beim Abonnieren eingeben.
   label_caldav_tasks_row_outlook: Outlook 2016+
   label_caldav_tasks_row_outlook_note: >
     Kalender-Feed (VEVENT) – zeigt Issues mit Fälligkeitsdatum als Ganztagesereignisse.
@@ -27,7 +32,8 @@ de:
     Manche Clients (z. B. Thunderbird) senden beim Abonnieren keine HTTP-Zugangsdaten.
     In diesem Fall den API-Schlüssel direkt in die URL einbauen:
   label_caldav_tasks_auth_token_warning: >
-    Der API-Schlüssel ist in der URL sichtbar (Server-Logs, Browser-Verlauf).
+    HTTPS verschlüsselt die URL im Netzwerk — der Key ist für Außenstehende nicht sichtbar.
+    Er erscheint jedoch in server-seitigen Access-Logs (nginx, Puma).
     Behandeln Sie diese URL wie ein Passwort und geben Sie sie nicht weiter.
   label_caldav_tasks_my_account: Mein Konto
   label_caldav_tasks_project_selection: Projektauswahl

@@ -10,7 +10,8 @@ This plugin adds two unauthenticated-from-the-browser, API-key-protected HTTP en
 
 | Endpoint | Format | Best for |
 |---|---|---|
-| `/caldav_tasks/todos.ics` | VTODO | Thunderbird, iOS, Android |
+| `/caldav_tasks/todos.ics?key=API_KEY` | VTODO | Thunderbird (key in URL, no auth dialog) |
+| `/caldav_tasks/todos.ics` | VTODO | iOS, Android (credentials on subscribe) |
 | `/caldav_tasks/events.ics` | VEVENT (all-day) | Outlook 2016+ |
 
 Each user sees only their own assigned issues from the projects configured in the plugin settings.
@@ -81,8 +82,8 @@ Go to **My account** (top-right menu) → scroll to **API access key** → show 
 Use one of the URLs shown on the plugin configuration page:
 
 ```
-webcal://your-redmine-host/caldav_tasks/todos.ics   ← Thunderbird, iOS, Android
-webcal://your-redmine-host/caldav_tasks/events.ics  ← Outlook
+https://your-redmine-host/caldav_tasks/todos.ics   ← Thunderbird, iOS, Android
+https://your-redmine-host/caldav_tasks/events.ics  ← Outlook
 ```
 
 When your client asks for credentials, use **any** of these combinations:
@@ -100,18 +101,18 @@ The `X-Redmine-API-Key` HTTP header is also accepted for programmatic access.
 Some clients (notably Thunderbird) perform CalDAV discovery before fetching the ICS file and never present an HTTP credentials dialog. For these clients, embed the API key directly in the URL as a `key` query parameter — no credentials dialog required:
 
 ```
-webcal://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY
-webcal://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY
+https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY
+https://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY
 ```
 
-> **Security note:** The API key is visible in the URL (server logs, browser history). Treat this URL like a password and do not share it.
+> **Security note:** HTTPS encrypts the URL in transit — the key is not visible to network observers. It does however appear in server-side access logs (nginx, Puma). Treat this URL like a password and do not share it.
 
 ### Client-specific instructions
 
 **Thunderbird**
 1. Calendar → New Calendar → On the Network
 2. Enter the URL **with your API key embedded**:
-   `webcal://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY`
+   `https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY`
 3. No credentials dialog needed
 
 > Thunderbird performs CalDAV discovery (PROPFIND) before fetching the ICS file and does not send HTTP credentials automatically. Embedding the API key in the URL bypasses this problem.

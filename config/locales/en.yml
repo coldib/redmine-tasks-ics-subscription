@@ -7,9 +7,14 @@ en:
   label_caldav_tasks_client_column: Client
   label_caldav_tasks_url_column: Subscription URL
   label_caldav_tasks_note_column: Note
-  label_caldav_tasks_row_tasks: Thunderbird, iOS, Android
-  label_caldav_tasks_row_tasks_note: >
+  label_caldav_tasks_row_thunderbird: Thunderbird
+  label_caldav_tasks_row_thunderbird_note: >
+    Task feed (VTODO). Thunderbird does not present an HTTP auth dialog —
+    embed the API key directly in the URL (see below).
+  label_caldav_tasks_row_ios_android: iOS / Android
+  label_caldav_tasks_row_ios_android_note: >
     Task feed (VTODO) – displays all assigned issues as tasks.
+    Enter credentials when subscribing.
   label_caldav_tasks_row_outlook: Outlook 2016+
   label_caldav_tasks_row_outlook_note: >
     Calendar feed (VEVENT) – displays issues with a due date as all-day events.
@@ -27,7 +32,8 @@ en:
     Some clients (e.g. Thunderbird) do not send HTTP credentials when subscribing.
     In that case, embed the API key directly in the URL:
   label_caldav_tasks_auth_token_warning: >
-    The API key is visible in the URL (server logs, browser history).
+    HTTPS encrypts the URL in transit — the key is not visible to network observers.
+    However, it does appear in server-side access logs (nginx, Puma).
     Treat this URL like a password and do not share it.
   label_caldav_tasks_my_account: My Account
   label_caldav_tasks_project_selection: Project Selection

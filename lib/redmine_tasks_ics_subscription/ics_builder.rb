@@ -40,7 +40,7 @@ module RedmineTasksIcsSubscription
         'PRODID:-//Redmine CalDAV Tasks Plugin//EN',
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH',
-        'X-WR-CALNAME:Redmine Tasks',
+        "X-WR-CALNAME:redmine-tasks-#{host}",
         'X-WR-TIMEZONE:UTC'
       ]
     end
