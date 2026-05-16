@@ -45,7 +45,7 @@
     <tbody>
       <% all_projects.each do |project| %>
         <%
-          depth = project.depth
+          depth = project.level
           indent = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth
           exact_checked   = settings_project_ids.include?(project.id)
           sub_checked     = settings_project_ids_with_subprojects.include?(project.id)
