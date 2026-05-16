@@ -23,7 +23,9 @@ Each user sees only their own assigned issues from the projects configured in th
 
 **Thunderbird, iOS, Android** natively support VTODO (the iCalendar task format) and display subscribed tasks in their task/reminder views.
 
-**Outlook 2016+** silently ignores VTODO entries in ICS subscriptions. It only renders VEVENT (calendar events). The `/caldav_tasks/events.ics` endpoint works around this by outputting issues as all-day calendar events placed on their due date. Issues without a due date are omitted from this feed.
+**Outlook 2016+** silently ignores VTODO entries in ICS subscriptions. It only renders VEVENT (calendar events). The `/caldav_tasks/events.ics` endpoint works around this by outputting issues as all-day calendar events placed on their due date.
+
+> **Important:** Issues without a due date are **never returned** by the `events.ics` endpoint. If an issue does not appear in Outlook, check that it has a due date set in Redmine.
 
 ---
 

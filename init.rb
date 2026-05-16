@@ -4,8 +4,8 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), 'lib')
 
 Redmine::Plugin.register :redmine_tasks_ics_subscription do
   name        'Redmine Tasks ICS Subscription'
-  author      'Wolfgang Lobo'
-  description 'Exposes assigned Redmine issues as VTODO items in an ICS feed (CalDAV-compatible)'
+  author      'Wolfgang Grim'
+  description 'Exposes assigned Redmine issues as a read-only ICS feed (VTODO and VEVENT)'
   version     '1.0.0'
   settings :default => {
              'all_projects'                 => '0',
