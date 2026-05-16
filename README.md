@@ -10,8 +10,8 @@ A Redmine plugin that exposes assigned issues as a read-only ICS feed. Each user
 
 | Endpoint | Format | Use when |
 |---|---|---|
-| `/caldav_tasks/todos.ics` | VTODO | Client supports tasks/reminders (Thunderbird, iOS, Android) |
-| `/caldav_tasks/events.ics` | VEVENT (all-day) | Client only shows calendar events (Outlook) |
+| `/caldav_tasks/redmine-tasks.ics` | VTODO | Client supports tasks/reminders (Thunderbird, iOS, Android) |
+| `/caldav_tasks/redmine-events.ics` | VEVENT (all-day) | Client only shows calendar events (Outlook) |
 
 ---
 
@@ -76,8 +76,8 @@ Options can be combined. **Open issues only** — when checked, closed issues ar
 Enter the URL in your client — it will prompt for credentials:
 
 ```
-https://your-redmine-host/caldav_tasks/todos.ics    ← iOS, Android (tasks/reminders)
-https://your-redmine-host/caldav_tasks/events.ics   ← Outlook (calendar events)
+https://your-redmine-host/caldav_tasks/redmine-tasks.ics    ← iOS, Android (tasks/reminders)
+https://your-redmine-host/caldav_tasks/redmine-events.ics   ← Outlook (calendar events)
 ```
 
 Any of these credential combinations work:
@@ -95,8 +95,8 @@ The `X-Redmine-API-Key` HTTP header is also accepted for programmatic access.
 Thunderbird performs CalDAV discovery before fetching the ICS file and never presents an HTTP credentials dialog. Embed the API key directly in the URL:
 
 ```
-https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY    ← Task list
-https://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY   ← Calendar view
+https://your-redmine-host/caldav_tasks/redmine-tasks.ics?key=YOUR_API_KEY    ← Task list
+https://your-redmine-host/caldav_tasks/redmine-events.ics?key=YOUR_API_KEY   ← Calendar view
 ```
 
 > **Security:** HTTPS encrypts the URL in transit — the key is not visible to network observers. It does however appear in server-side access logs (nginx, Puma). Treat this URL like a password and do not share it.
@@ -125,23 +125,23 @@ https://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY   ← Calenda
 
 Basic fetch (API key as Basic Auth username):
 ```bash
-curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/todos.ics
-curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/events.ics
+curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/redmine-tasks.ics
+curl -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/redmine-events.ics
 ```
 
 With API key as URL parameter (Thunderbird method):
 ```bash
-curl "https://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY"
+curl "https://your-redmine-host/caldav_tasks/redmine-tasks.ics?key=YOUR_API_KEY"
 ```
 
 Verbose output for debugging (shows headers, TLS handshake, response):
 ```bash
-curl -v -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/todos.ics
+curl -v -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/redmine-tasks.ics
 ```
 
 Check response headers only:
 ```bash
-curl -I -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/todos.ics
+curl -I -u "YOUR_API_KEY:x" https://your-redmine-host/caldav_tasks/redmine-tasks.ics
 ```
 
 Expected responses:
@@ -207,7 +207,7 @@ redmine_tasks_ics_subscription/
 │       └── redmine_tasks_ics_subscription/
 │           └── _settings.html.erb                 # Admin settings page
 ├── config/
-│   ├── routes.rb                                  # GET /caldav_tasks/todos.ics + events.ics
+│   ├── routes.rb                                  # GET /caldav_tasks/redmine-tasks.ics + events.ics
 │   └── locales/
 │       ├── de.yml
 │       └── en.yml
