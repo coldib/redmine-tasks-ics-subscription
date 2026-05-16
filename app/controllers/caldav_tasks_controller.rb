@@ -84,12 +84,15 @@ class CaldavTasksController < ApplicationController
   end
 
   # Supports, in order of preference:
-  #   1. HTTP Basic Auth — username = API key, password = anything
-  #   2. HTTP Basic Auth — username = login, password = API key
-  #   3. HTTP Basic Auth — username/password (regular Redmine login)
-  #   4. X-Redmine-API-Key header (Redmine REST API standard)
+  #   1. URL parameter  — ?key=API_KEY (for clients like Thunderbird that don't send Basic Auth)
+  #   2. HTTP Basic Auth — username = API key, password = anything
+  #   3. HTTP Basic Auth — username = login, password = API key
+  #   4. HTTP Basic Auth — username/password (regular Redmine login)
+  #   5. X-Redmine-API-Key header (Redmine REST API standard)
   def find_user_from_request
-    if /\ABasic /i.match?(request.authorization.to_s)
+    if (key = params[:key].presence)
+      User.find_by_api_key(key)
+    elsif /\ABasic /i.match?(request.authorization.to_s)
       user = nil
       authenticate_with_http_basic do |username, password|
         user = User.find_by_api_key(username)
@@ -100,6 +103,11 @@ class CaldavTasksController < ApplicationController
     elsif (key = request.headers['X-Redmine-API-Key'].presence)
       User.find_by_api_key(key)
     end
+  end
+
+  def method_not_allowed
+    response.headers['Allow'] = 'GET, HEAD'
+    head :method_not_allowed
   end
 
   def empty_calendar

@@ -95,12 +95,26 @@ When your client asks for credentials, use **any** of these combinations:
 
 The `X-Redmine-API-Key` HTTP header is also accepted for programmatic access.
 
+### Thunderbird / clients without an HTTP auth dialog
+
+Some clients (notably Thunderbird) perform CalDAV discovery before fetching the ICS file and never present an HTTP credentials dialog. For these clients, embed the API key directly in the URL as a `key` query parameter — no credentials dialog required:
+
+```
+webcal://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY
+webcal://your-redmine-host/caldav_tasks/events.ics?key=YOUR_API_KEY
+```
+
+> **Security note:** The API key is visible in the URL (server logs, browser history). Treat this URL like a password and do not share it.
+
 ### Client-specific instructions
 
 **Thunderbird**
 1. Calendar → New Calendar → On the Network
-2. Select **iCalendar (ICS)** _(not CalDAV)_
-3. Enter the `todos.ics` URL → enter credentials when prompted
+2. Enter the URL **with your API key embedded**:
+   `webcal://your-redmine-host/caldav_tasks/todos.ics?key=YOUR_API_KEY`
+3. No credentials dialog needed
+
+> Thunderbird performs CalDAV discovery (PROPFIND) before fetching the ICS file and does not send HTTP credentials automatically. Embedding the API key in the URL bypasses this problem.
 
 **Outlook 2016 / 2019 / 365**
 1. File → Account Settings → Internet Calendars → New

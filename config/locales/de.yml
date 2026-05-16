@@ -22,6 +22,13 @@ de:
   label_caldav_tasks_auth_step2_a: "Benutzername = API-Schlüssel, Passwort = beliebig (z. B. x)"
   label_caldav_tasks_auth_step2_b: "Benutzername = Redmine-Login, Passwort = API-Schlüssel"
   label_caldav_tasks_auth_step2_c: "Benutzername = Redmine-Login, Passwort = Redmine-Passwort"
+  label_caldav_tasks_auth_token_title: "Thunderbird / Clients ohne HTTP-Auth-Dialog"
+  label_caldav_tasks_auth_token_hint: >
+    Manche Clients (z. B. Thunderbird) senden beim Abonnieren keine HTTP-Zugangsdaten.
+    In diesem Fall den API-Schlüssel direkt in die URL einbauen:
+  label_caldav_tasks_auth_token_warning: >
+    Der API-Schlüssel ist in der URL sichtbar (Server-Logs, Browser-Verlauf).
+    Behandeln Sie diese URL wie ein Passwort und geben Sie sie nicht weiter.
   label_caldav_tasks_my_account: Mein Konto
   label_caldav_tasks_project_selection: Projektauswahl
   label_caldav_tasks_all_projects: Alle Projekte einschließen

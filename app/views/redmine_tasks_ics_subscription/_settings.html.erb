@@ -58,6 +58,16 @@
       </ul>
     </li>
   </ol>
+
+  <p style="margin:12px 0 4px 0;"><strong><%= l(:label_caldav_tasks_auth_token_title) %></strong></p>
+  <p class="description" style="margin-bottom:4px;"><%= l(:label_caldav_tasks_auth_token_hint) %></p>
+  <p style="margin:2px 0;">
+    <code>webcal://<%= request.host_with_port %>/caldav_tasks/todos.ics?key=<strong>API_KEY</strong></code>
+  </p>
+  <p style="margin:2px 0;">
+    <code>webcal://<%= request.host_with_port %>/caldav_tasks/events.ics?key=<strong>API_KEY</strong></code>
+  </p>
+  <p class="description" style="margin-top:4px;">&#9888; <%= l(:label_caldav_tasks_auth_token_warning) %></p>
 </fieldset>
 
 <div style="margin-top:10px;"></div>
