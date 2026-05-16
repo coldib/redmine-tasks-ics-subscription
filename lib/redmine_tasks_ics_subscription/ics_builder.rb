@@ -1,4 +1,4 @@
-module RedmineCaldavTasks
+module RedmineTasksIcsSubscription
   class IcsBuilder
     # Maps Redmine priority position to iCalendar PRIORITY value (1=highest, 9=lowest)
     PRIORITY_MAP = {

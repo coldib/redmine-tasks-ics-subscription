@@ -1,1 +1,0 @@
-require_relative 'redmine_caldav_tasks/ics_builder'

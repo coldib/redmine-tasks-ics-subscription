@@ -9,7 +9,7 @@ class CaldavTasksController < ApplicationController
   before_action :authenticate_via_api_key
 
   def todos
-    settings = Setting.plugin_redmine_caldav_tasks
+    settings = Setting.plugin_redmine_tasks_ics_subscription
 
     project_ids                  = Array(settings['project_ids']).map(&:to_i).reject(&:zero?)
     project_ids_with_subprojects = Array(settings['project_ids_with_subprojects']).map(&:to_i).reject(&:zero?)
@@ -45,7 +45,7 @@ class CaldavTasksController < ApplicationController
 
     issues = issues.open if open_issues_only
 
-    ics = RedmineCaldavTasks::IcsBuilder.new(issues, request.host).build
+    ics = RedmineTasksIcsSubscription::IcsBuilder.new(issues, request.host).build
 
     response.headers['Content-Disposition'] = 'attachment; filename="redmine-tasks.ics"'
     render plain: ics, content_type: 'text/calendar; charset=utf-8'

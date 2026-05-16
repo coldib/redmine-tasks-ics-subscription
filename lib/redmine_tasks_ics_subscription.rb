@@ -1,0 +1,1 @@
+require_relative 'redmine_tasks_ics_subscription/ics_builder'
