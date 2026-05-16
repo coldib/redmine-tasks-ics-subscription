@@ -29,7 +29,7 @@ Each user sees only their own assigned issues from the projects configured in th
 
 ## Requirements
 
-- Redmine 4.x or 5.x
+- Redmine 6.x (tested; other versions may work but are untested)
 - Ruby 2.7+
 - REST API must be enabled in Redmine (Administration → Settings → API → Enable REST web service)
 
