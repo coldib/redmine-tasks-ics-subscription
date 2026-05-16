@@ -8,6 +8,7 @@ Redmine::Plugin.register :redmine_tasks_ics_subscription do
   description 'Exposes assigned Redmine issues as VTODO items in an ICS feed (CalDAV-compatible)'
   version     '1.0.0'
   settings :default => {
+             'all_projects'                 => '0',
              'project_ids'                  => [],
              'project_ids_with_subprojects' => [],
              'open_issues_only'             => '1'

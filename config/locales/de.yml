@@ -1,21 +1,38 @@
 de:
-  label_caldav_tasks_subscription_url: Abonnement-URL
-  label_caldav_tasks_subscription_hint: >
-    Verwenden Sie diese URL, um Ihre Redmine-Aufgaben in Outlook, iOS oder Android zu abonnieren.
-    Der Client fragt beim Abonnieren nach Zugangsdaten — geben Sie dort Ihren API-Schlüssel als Benutzernamen ein.
-  label_caldav_tasks_url_example: "Abonnement-URL:"
-  label_caldav_tasks_auth_hint: "Authentifizierung per HTTP Basic Auth: API-Schlüssel als Benutzername, Passwort beliebig. Den API-Schlüssel finden Sie unter"
-  label_caldav_tasks_auth_hint_suffix: "(Abschnitt \"API-Zugriffsschlüssel\")."
+  label_caldav_tasks_subscription_url: Abonnement-URLs
+  label_caldav_tasks_caldav_warning: >
+    Dieses Plugin stellt einen reinen ICS-Feed bereit (kein CalDAV-Server).
+    Bitte die URL als „Internet-Kalender" oder „ICS-Abo" hinzufügen – nicht als CalDAV-Konto,
+    da CalDAV-Protokollmethoden (PROPFIND, PUT usw.) nicht unterstützt werden.
+  label_caldav_tasks_client_column: Client
+  label_caldav_tasks_url_column: Abonnement-URL
+  label_caldav_tasks_note_column: Hinweis
+  label_caldav_tasks_row_tasks: Thunderbird, iOS, Android
+  label_caldav_tasks_row_tasks_note: >
+    Aufgaben-Feed (VTODO) – zeigt alle zugewiesenen Issues als Aufgaben an.
+  label_caldav_tasks_row_outlook: Outlook 2016+
+  label_caldav_tasks_row_outlook_note: >
+    Kalender-Feed (VEVENT) – zeigt Issues mit Fälligkeitsdatum als Ganztagesereignisse.
+    Outlook ignoriert VTODO-Einträge in ICS-Abos, daher ist dieser separate Feed nötig.
+    Issues ohne Fälligkeitsdatum erscheinen nicht.
+  label_caldav_tasks_auth_title: Authentifizierung
+  label_caldav_tasks_auth_step1: "Schritt 1: Öffnen Sie"
+  label_caldav_tasks_auth_step1_suffix: "und kopieren Sie Ihren API-Zugriffsschlüssel."
+  label_caldav_tasks_auth_step2: "Schritt 2: Geben Sie beim Abonnieren folgende Zugangsdaten ein (eine der drei Varianten):"
+  label_caldav_tasks_auth_step2_a: "Benutzername = API-Schlüssel, Passwort = beliebig (z. B. x)"
+  label_caldav_tasks_auth_step2_b: "Benutzername = Redmine-Login, Passwort = API-Schlüssel"
+  label_caldav_tasks_auth_step2_c: "Benutzername = Redmine-Login, Passwort = Redmine-Passwort"
   label_caldav_tasks_my_account: Mein Konto
   label_caldav_tasks_project_selection: Projektauswahl
+  label_caldav_tasks_all_projects: Alle Projekte einschließen
+  label_caldav_tasks_all_projects_hint: "Schließt automatisch auch künftig angelegte Projekte ein."
   label_caldav_tasks_open_issues_only: Nur offene Aufgaben exportieren
   label_caldav_tasks_project: Projekt
   label_caldav_tasks_include_exact: Genau dieses Projekt
   label_caldav_tasks_include_with_subprojects: Inkl. Unterprojekte
   label_caldav_tasks_exact_hint: Nur Aufgaben direkt in diesem Projekt einschließen
-  label_caldav_tasks_subprojects_hint: Aufgaben in diesem Projekt und allen Unterprojekten einschließen
-  label_caldav_tasks_events_url_example: "Outlook-Kalender-URL (Ganztagesereignisse nach Fälligkeit):"
-  label_caldav_tasks_events_hint: "Nur für Outlook – zeigt Aufgaben mit Fälligkeitsdatum als Ganztagesereignisse im Kalender an."
+  label_caldav_tasks_subprojects_hint: >
+    Aufgaben in diesem Projekt und allen Unterprojekten einschließen.
+    Neu angelegte Unterprojekte werden automatisch berücksichtigt.
   label_caldav_tasks_selection_hint: >
-    Sie können für jedes Projekt wählen, ob nur das Projekt selbst oder auch alle
-    Unterprojekte eingeschlossen werden sollen. Benutzer sehen nur ihnen zugewiesene Aufgaben.
+    Jeder Benutzer sieht nur ihm zugewiesene Aufgaben aus den ausgewählten Projekten.

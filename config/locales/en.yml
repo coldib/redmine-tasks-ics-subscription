@@ -1,21 +1,38 @@
 en:
-  label_caldav_tasks_subscription_url: Subscription URL
-  label_caldav_tasks_subscription_hint: >
-    Use this URL to subscribe to your Redmine tasks in Outlook, iOS or Android.
-    The client will prompt for credentials — enter your API key as the username.
-  label_caldav_tasks_url_example: "Subscription URL:"
-  label_caldav_tasks_auth_hint: "Authentication via HTTP Basic Auth: API key as username, any password. Find your API key under"
-  label_caldav_tasks_auth_hint_suffix: "(section \"API access key\")."
+  label_caldav_tasks_subscription_url: Subscription URLs
+  label_caldav_tasks_caldav_warning: >
+    This plugin provides a read-only ICS feed (not a CalDAV server).
+    Please add the URL as an "Internet calendar" or "ICS subscription" — not as a CalDAV account,
+    as CalDAV protocol methods (PROPFIND, PUT, etc.) are not supported.
+  label_caldav_tasks_client_column: Client
+  label_caldav_tasks_url_column: Subscription URL
+  label_caldav_tasks_note_column: Note
+  label_caldav_tasks_row_tasks: Thunderbird, iOS, Android
+  label_caldav_tasks_row_tasks_note: >
+    Task feed (VTODO) – displays all assigned issues as tasks.
+  label_caldav_tasks_row_outlook: Outlook 2016+
+  label_caldav_tasks_row_outlook_note: >
+    Calendar feed (VEVENT) – displays issues with a due date as all-day events.
+    Outlook silently ignores VTODO entries in ICS subscriptions, so this separate feed is required.
+    Issues without a due date will not appear.
+  label_caldav_tasks_auth_title: Authentication
+  label_caldav_tasks_auth_step1: "Step 1: Open"
+  label_caldav_tasks_auth_step1_suffix: "and copy your API access key."
+  label_caldav_tasks_auth_step2: "Step 2: Enter credentials when subscribing (any one of the three options):"
+  label_caldav_tasks_auth_step2_a: "Username = API key, Password = anything (e.g. x)"
+  label_caldav_tasks_auth_step2_b: "Username = Redmine login, Password = API key"
+  label_caldav_tasks_auth_step2_c: "Username = Redmine login, Password = Redmine password"
   label_caldav_tasks_my_account: My Account
   label_caldav_tasks_project_selection: Project Selection
+  label_caldav_tasks_all_projects: Include all projects
+  label_caldav_tasks_all_projects_hint: "Also automatically includes projects created in the future."
   label_caldav_tasks_open_issues_only: Export open issues only
   label_caldav_tasks_project: Project
   label_caldav_tasks_include_exact: This project only
   label_caldav_tasks_include_with_subprojects: Incl. subprojects
   label_caldav_tasks_exact_hint: Include only issues directly in this project
-  label_caldav_tasks_subprojects_hint: Include issues in this project and all its subprojects
-  label_caldav_tasks_events_url_example: "Outlook calendar URL (all-day events by due date):"
-  label_caldav_tasks_events_hint: "For Outlook only — shows tasks with a due date as all-day events in the calendar view."
+  label_caldav_tasks_subprojects_hint: >
+    Include issues in this project and all its subprojects.
+    Newly created subprojects are automatically included.
   label_caldav_tasks_selection_hint: >
-    For each project you can choose whether to include only the project itself or also
-    all subprojects. Users will only see issues assigned to them.
+    Each user only sees issues assigned to them from the selected projects.

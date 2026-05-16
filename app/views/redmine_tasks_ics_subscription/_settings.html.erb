@@ -2,6 +2,7 @@
   all_projects = Project.active.order(:lft)
   settings_project_ids                  = Array(@settings['project_ids']).map(&:to_i)
   settings_project_ids_with_subprojects = Array(@settings['project_ids_with_subprojects']).map(&:to_i)
+  all_projects_enabled                  = @settings['all_projects'] == '1'
 
   # Compute nesting depth from parent_id (avoids relying on acts_as_nested_set version-specific methods)
   project_depth = {}
@@ -14,21 +15,49 @@
 
 <fieldset>
   <legend><%= l(:label_caldav_tasks_subscription_url) %></legend>
-  <p class="description"><%= l(:label_caldav_tasks_subscription_hint) %></p>
-  <p>
-    <strong><%= l(:label_caldav_tasks_url_example) %></strong><br/>
-    <code>webcal://<%= request.host_with_port %>/caldav_tasks/todos.ics</code>
+
+  <p class="description" style="margin-bottom:8px;">
+    &#9888; <%= l(:label_caldav_tasks_caldav_warning) %>
   </p>
-  <p>
-    <strong><%= l(:label_caldav_tasks_events_url_example) %></strong><br/>
-    <code>webcal://<%= request.host_with_port %>/caldav_tasks/events.ics</code><br/>
-    <span class="description"><%= l(:label_caldav_tasks_events_hint) %></span>
-  </p>
-  <p class="description">
-    <%= l(:label_caldav_tasks_auth_hint) %>
-    <%= link_to l(:label_caldav_tasks_my_account), my_account_path %>
-    <%= l(:label_caldav_tasks_auth_hint_suffix) %>
-  </p>
+
+  <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+    <thead>
+      <tr style="background:#eee;">
+        <th style="text-align:left; padding:5px 8px;"><%= l(:label_caldav_tasks_client_column) %></th>
+        <th style="text-align:left; padding:5px 8px;"><%= l(:label_caldav_tasks_url_column) %></th>
+        <th style="text-align:left; padding:5px 8px;"><%= l(:label_caldav_tasks_note_column) %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f8f8f8;">
+        <td style="padding:5px 8px; white-space:nowrap;"><strong><%= l(:label_caldav_tasks_row_tasks) %></strong></td>
+        <td style="padding:5px 8px;"><code>webcal://<%= request.host_with_port %>/caldav_tasks/todos.ics</code></td>
+        <td style="padding:5px 8px; font-size:0.9em;" class="description"><%= l(:label_caldav_tasks_row_tasks_note) %></td>
+      </tr>
+      <tr style="background:#fff;">
+        <td style="padding:5px 8px; white-space:nowrap;"><strong><%= l(:label_caldav_tasks_row_outlook) %></strong></td>
+        <td style="padding:5px 8px;"><code>webcal://<%= request.host_with_port %>/caldav_tasks/events.ics</code></td>
+        <td style="padding:5px 8px; font-size:0.9em;" class="description"><%= l(:label_caldav_tasks_row_outlook_note) %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-bottom:4px;"><strong><%= l(:label_caldav_tasks_auth_title) %></strong></p>
+  <ol style="margin:0 0 4px 20px;">
+    <li>
+      <%= l(:label_caldav_tasks_auth_step1) %>
+      <%= link_to l(:label_caldav_tasks_my_account), my_account_path %>
+      <%= l(:label_caldav_tasks_auth_step1_suffix) %>
+    </li>
+    <li>
+      <%= l(:label_caldav_tasks_auth_step2) %>
+      <ul style="margin:4px 0 0 16px; list-style:disc;">
+        <li><%= l(:label_caldav_tasks_auth_step2_a) %></li>
+        <li><%= l(:label_caldav_tasks_auth_step2_b) %></li>
+        <li><%= l(:label_caldav_tasks_auth_step2_c) %></li>
+      </ul>
+    </li>
+  </ol>
 </fieldset>
 
 <div style="margin-top:10px;"></div>
@@ -37,11 +66,18 @@
   <legend><%= l(:label_caldav_tasks_project_selection) %></legend>
 
   <p>
-    <%= label_tag 'settings[open_issues_only]', l(:label_caldav_tasks_open_issues_only) %>
     <%= check_box_tag 'settings[open_issues_only]', '1', @settings['open_issues_only'] == '1' %>
+    <%= label_tag 'settings[open_issues_only]', l(:label_caldav_tasks_open_issues_only) %>
   </p>
 
-  <table style="width:100%; border-collapse:collapse;">
+  <p>
+    <%= hidden_field_tag 'settings[all_projects]', '0' %>
+    <%= check_box_tag 'settings[all_projects]', '1', all_projects_enabled, id: 'caldav_all_projects_toggle' %>
+    <%= label_tag 'caldav_all_projects_toggle', l(:label_caldav_tasks_all_projects) %>
+    <span class="description"> &ndash; <%= l(:label_caldav_tasks_all_projects_hint) %></span>
+  </p>
+
+  <table id="caldav_project_table" style="width:100%; border-collapse:collapse;">
     <thead>
       <tr>
         <th style="text-align:left; padding:4px 8px;"><%= l(:label_caldav_tasks_project) %></th>
@@ -56,26 +92,31 @@
     <tbody>
       <% all_projects.each do |project| %>
         <%
-          depth = project_depth[project.id] || 0
-          indent = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth
-          exact_checked   = settings_project_ids.include?(project.id)
-          sub_checked     = settings_project_ids_with_subprojects.include?(project.id)
+          depth         = project_depth[project.id] || 0
+          exact_checked = settings_project_ids.include?(project.id)
+          sub_checked   = settings_project_ids_with_subprojects.include?(project.id)
         %>
-        <tr style="<%= cycle('background:#f8f8f8', 'background:#fff') %>">
-          <td style="padding:3px 8px;">
-            <%= indent.html_safe %><%= project.name %>
+        <tr style="<%= cycle('background:#f8f8f8', 'background:#fff') %>"
+            data-project-id="<%= project.id %>"
+            data-parent-id="<%= project.parent_id.to_i %>">
+          <td style="padding:3px 8px 3px <%= 8 + depth * 20 %>px;">
+            <%= project.name %>
           </td>
           <td style="text-align:center; padding:3px 8px;">
             <%= check_box_tag 'settings[project_ids][]',
                               project.id,
                               exact_checked,
-                              id: "project_exact_#{project.id}" %>
+                              id:    "project_exact_#{project.id}",
+                              class: 'caldav-exact-cb',
+                              data:  { project_id: project.id } %>
           </td>
           <td style="text-align:center; padding:3px 8px;">
             <%= check_box_tag 'settings[project_ids_with_subprojects][]',
                               project.id,
                               sub_checked,
-                              id: "project_sub_#{project.id}" %>
+                              id:    "project_sub_#{project.id}",
+                              class: 'caldav-sub-cb',
+                              data:  { project_id: project.id } %>
           </td>
         </tr>
       <% end %>
@@ -86,3 +127,113 @@
     <%= l(:label_caldav_tasks_selection_hint) %>
   </p>
 </fieldset>
+
+<script>
+(function () {
+  'use strict';
+
+  var table      = document.getElementById('caldav_project_table');
+  var allToggle  = document.getElementById('caldav_all_projects_toggle');
+  if (!table || !allToggle) return;
+
+  var rows = Array.prototype.slice.call(
+    table.querySelectorAll('tbody tr')
+  );
+
+  // Build parent → [child, ...] map
+  var childMap = {};
+  rows.forEach(function (row) {
+    var pid = parseInt(row.dataset.parentId, 10);
+    var id  = parseInt(row.dataset.projectId, 10);
+    if (pid) {
+      if (!childMap[pid]) childMap[pid] = [];
+      childMap[pid].push(id);
+    }
+  });
+
+  // Return all descendant IDs for a given project ID
+  function descendants(id) {
+    var result = [];
+    (childMap[id] || []).forEach(function (childId) {
+      result.push(childId);
+      result = result.concat(descendants(childId));
+    });
+    return result;
+  }
+
+  // Lock or unlock a single checkbox, saving/restoring its state.
+  // Only transitions matter: enabled→disabled saves state; disabled→enabled restores it.
+  function setLocked(cb, locked) {
+    if (!cb) return;
+    if (locked && !cb.disabled) {
+      cb.dataset.wasChecked = cb.checked ? '1' : '0';
+      cb.checked  = true;
+      cb.disabled = true;
+    } else if (!locked && cb.disabled) {
+      cb.disabled = false;
+      if ('wasChecked' in cb.dataset) {
+        cb.checked = cb.dataset.wasChecked === '1';
+        delete cb.dataset.wasChecked;
+      }
+    }
+  }
+
+  // Recompute and apply the complete lock state from scratch.
+  // 1. Unlock all currently locked checkboxes (restores saved state).
+  // 2a. If "all projects" is on  → lock every checkbox.
+  // 2b. Otherwise               → lock descendants of every checked sub-cb.
+  // 3. For any sub-cb that is now checked+enabled, re-cascade its descendants.
+  function applyAllLocks() {
+    // Step 1: unlock everything
+    rows.forEach(function (row) {
+      var id = parseInt(row.dataset.projectId, 10);
+      setLocked(document.getElementById('project_exact_' + id), false);
+      setLocked(document.getElementById('project_sub_'   + id), false);
+    });
+
+    if (allToggle.checked) {
+      // Step 2a: lock every checkbox
+      rows.forEach(function (row) {
+        var id = parseInt(row.dataset.projectId, 10);
+        setLocked(document.getElementById('project_exact_' + id), true);
+        setLocked(document.getElementById('project_sub_'   + id), true);
+      });
+      return;
+    }
+
+    // Step 2b: lock descendants of every checked sub-cb
+    // Collect locked IDs first (sub-cbs may be parents of other sub-cbs)
+    var lockedIds = {};
+    rows.forEach(function (row) {
+      var id    = parseInt(row.dataset.projectId, 10);
+      var subCb = document.getElementById('project_sub_' + id);
+      if (subCb && subCb.checked) {
+        descendants(id).forEach(function (descId) {
+          lockedIds[descId] = true;
+        });
+      }
+    });
+
+    // Apply locks
+    Object.keys(lockedIds).forEach(function (descId) {
+      descId = parseInt(descId, 10);
+      setLocked(document.getElementById('project_exact_' + descId), true);
+      setLocked(document.getElementById('project_sub_'   + descId), true);
+    });
+  }
+
+  // Wire up events
+  allToggle.addEventListener('change', applyAllLocks);
+
+  rows.forEach(function (row) {
+    var id    = parseInt(row.dataset.projectId, 10);
+    var subCb = document.getElementById('project_sub_' + id);
+    if (subCb) {
+      subCb.addEventListener('change', applyAllLocks);
+    }
+  });
+
+  // Apply initial state on page load
+  applyAllLocks();
+}());
+</script>

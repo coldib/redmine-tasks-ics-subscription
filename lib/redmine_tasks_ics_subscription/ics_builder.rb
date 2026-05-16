@@ -9,66 +9,57 @@ module RedmineTasksIcsSubscription
       5 => 9
     }.freeze
 
-    def initialize(issues, host)
-      @issues = issues
-      @host   = host
+    def initialize(issues, base_url)
+      @issues   = issues
+      @base_url = base_url
     end
 
     def build
-      lines = []
-      lines << 'BEGIN:VCALENDAR'
-      lines << 'VERSION:2.0'
-      lines << "PRODID:-//Redmine CalDAV Tasks Plugin//EN"
-      lines << 'CALSCALE:GREGORIAN'
-      lines << 'METHOD:PUBLISH'
-      lines << 'X-WR-CALNAME:Redmine Tasks'
-      lines << 'X-WR-TIMEZONE:UTC'
-
-      @issues.each do |issue|
-        lines += vtodo_lines(issue)
-      end
-
+      lines = cal_header
+      @issues.each { |issue| lines += vtodo_lines(issue) }
       lines << 'END:VCALENDAR'
       lines.join("\r\n") + "\r\n"
     end
 
     def build_events
-      lines = []
-      lines << 'BEGIN:VCALENDAR'
-      lines << 'VERSION:2.0'
-      lines << "PRODID:-//Redmine CalDAV Tasks Plugin//EN"
-      lines << 'CALSCALE:GREGORIAN'
-      lines << 'METHOD:PUBLISH'
-      lines << 'X-WR-CALNAME:Redmine Tasks'
-      lines << 'X-WR-TIMEZONE:UTC'
-
+      lines = cal_header
       @issues.each do |issue|
         next unless issue.due_date.present?
         lines += vevent_lines(issue)
       end
-
       lines << 'END:VCALENDAR'
       lines.join("\r\n") + "\r\n"
     end
 
     private
 
+    def cal_header
+      [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Redmine CalDAV Tasks Plugin//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:Redmine Tasks',
+        'X-WR-TIMEZONE:UTC'
+      ]
+    end
+
     def vtodo_lines(issue)
       lines = []
       lines << 'BEGIN:VTODO'
-      lines << "UID:redmine-issue-#{issue.id}@#{@host}"
+      lines << "UID:redmine-issue-#{issue.id}@#{host}"
       lines << "DTSTAMP:#{format_datetime(Time.now.utc)}"
       lines << "LAST-MODIFIED:#{format_datetime(issue.updated_on.utc)}"
       lines << "CREATED:#{format_datetime(issue.created_on.utc)}"
-      lines << "SUMMARY:#{escape_text("##{issue.id} #{issue.subject}")}"
+      lines << prop('SUMMARY',          escape_text("##{issue.id} #{issue.subject}"))
       lines << "STATUS:#{vtodo_status(issue)}"
       lines << "PRIORITY:#{vtodo_priority(issue)}"
       lines << "PERCENT-COMPLETE:#{issue.done_ratio}"
       lines << "URL:#{issue_url(issue)}"
 
       if issue.description.present?
-        description = "#{issue_url(issue)}\\n\\n#{issue.description}"
-        lines << "DESCRIPTION:#{escape_text(description)}"
+        lines << prop('DESCRIPTION', escape_text("#{issue_url(issue)}\\n\\n#{issue.description}"))
       else
         lines << "DESCRIPTION:#{issue_url(issue)}"
       end
@@ -76,8 +67,8 @@ module RedmineTasksIcsSubscription
       lines << "DTSTART;VALUE=DATE:#{format_date(issue.start_date)}" if issue.start_date.present?
       lines << "DUE;VALUE=DATE:#{format_date(issue.due_date)}"       if issue.due_date.present?
 
-      lines << "CATEGORIES:#{escape_text(issue.tracker.name)}"
-      lines << "COMMENT:#{escape_text(issue.project.name)}"
+      lines << prop('CATEGORIES', escape_text(issue.tracker.name))
+      lines << prop('COMMENT',    escape_text(issue.project.name))
       lines << 'END:VTODO'
       lines
     end
@@ -85,37 +76,26 @@ module RedmineTasksIcsSubscription
     def vevent_lines(issue)
       lines = []
       lines << 'BEGIN:VEVENT'
-      lines << "UID:redmine-issue-#{issue.id}-event@#{@host}"
+      lines << "UID:redmine-issue-#{issue.id}-event@#{host}"
       lines << "DTSTAMP:#{format_datetime(Time.now.utc)}"
       lines << "LAST-MODIFIED:#{format_datetime(issue.updated_on.utc)}"
       lines << "CREATED:#{format_datetime(issue.created_on.utc)}"
-      lines << "SUMMARY:#{escape_text("##{issue.id} #{issue.subject}")}"
+      lines << prop('SUMMARY', escape_text("##{issue.id} #{issue.subject}"))
       lines << "DTSTART;VALUE=DATE:#{format_date(issue.due_date)}"
       lines << "DTEND;VALUE=DATE:#{format_date(issue.due_date + 1)}"
       lines << "STATUS:#{vevent_status(issue)}"
       lines << "URL:#{issue_url(issue)}"
 
       if issue.description.present?
-        description = "#{issue_url(issue)}\\n\\n#{issue.description}"
-        lines << "DESCRIPTION:#{escape_text(description)}"
+        lines << prop('DESCRIPTION', escape_text("#{issue_url(issue)}\\n\\n#{issue.description}"))
       else
         lines << "DESCRIPTION:#{issue_url(issue)}"
       end
 
-      lines << "CATEGORIES:#{escape_text(issue.tracker.name)}"
-      lines << "COMMENT:#{escape_text(issue.project.name)}"
+      lines << prop('CATEGORIES', escape_text(issue.tracker.name))
+      lines << prop('COMMENT',    escape_text(issue.project.name))
       lines << 'END:VEVENT'
       lines
-    end
-
-    def vevent_status(issue)
-      if issue.closed?
-        'CANCELLED'
-      elsif issue.done_ratio > 0
-        'CONFIRMED'
-      else
-        'TENTATIVE'
-      end
     end
 
     def vtodo_status(issue)
@@ -125,6 +105,16 @@ module RedmineTasksIcsSubscription
         'IN-PROCESS'
       else
         'NEEDS-ACTION'
+      end
+    end
+
+    def vevent_status(issue)
+      if issue.closed?
+        'CANCELLED'
+      elsif issue.done_ratio > 0
+        'CONFIRMED'
+      else
+        'TENTATIVE'
       end
     end
 
@@ -141,31 +131,43 @@ module RedmineTasksIcsSubscription
       date.strftime('%Y%m%d')
     end
 
+    def host
+      # Strip protocol — used only for UIDs where a bare hostname is expected
+      @base_url.sub(%r{\Ahttps?://}, '')
+    end
+
     def issue_url(issue)
-      "https://#{@host}/issues/#{issue.id}"
+      "#{@base_url}/issues/#{issue.id}"
     end
 
-    # Escape special characters per RFC 5545 and fold long lines
+    # Escape special characters per RFC 5545
     def escape_text(text)
-      escaped = text.to_s
-                    .gsub('\\', '\\\\\\\\')
-                    .gsub("\r\n", '\n')
-                    .gsub("\n", '\n')
-                    .gsub(',', '\,')
-                    .gsub(';', '\;')
-      fold_line(escaped)
+      text.to_s
+          .gsub('\\', '\\\\\\\\')
+          .gsub("\r\n", '\n')
+          .gsub("\n", '\n')
+          .gsub(',', '\,')
+          .gsub(';', '\;')
     end
 
-    # RFC 5545 line folding: max 75 octets per line, continuation lines start with a space
-    def fold_line(text)
-      return text if text.bytesize <= 75
+    # Build a complete property line and fold it per RFC 5545.
+    # Folding must be applied to the full "PROPERTY:value" line so that
+    # the property name prefix is counted toward the 75-octet limit.
+    def prop(name, value)
+      fold_line("#{name}:#{value}")
+    end
 
-      result = []
+    # RFC 5545 line folding: max 75 octets per line,
+    # continuation lines begin with a single SPACE.
+    def fold_line(line)
+      return line if line.bytesize <= 75
+
+      result  = []
       current = ''
-      text.each_char do |char|
+      line.each_char do |char|
         if (current + char).bytesize > 75
-          result << current
-          current = ' ' + char
+          result  << current
+          current  = ' ' + char
         else
           current += char
         end
