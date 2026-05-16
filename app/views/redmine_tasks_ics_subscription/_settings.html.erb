@@ -2,6 +2,12 @@
   all_projects = Project.active.order(:lft)
   settings_project_ids                  = Array(@settings['project_ids']).map(&:to_i)
   settings_project_ids_with_subprojects = Array(@settings['project_ids_with_subprojects']).map(&:to_i)
+
+  # Compute nesting depth from parent_id (avoids relying on acts_as_nested_set version-specific methods)
+  project_depth = {}
+  all_projects.each do |p|
+    project_depth[p.id] = p.parent_id ? (project_depth[p.parent_id] || 0) + 1 : 0
+  end
 %>
 
 <div style="margin-top:10px;"></div>
@@ -45,7 +51,7 @@
     <tbody>
       <% all_projects.each do |project| %>
         <%
-          depth = project.level
+          depth = project_depth[project.id] || 0
           indent = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth
           exact_checked   = settings_project_ids.include?(project.id)
           sub_checked     = settings_project_ids_with_subprojects.include?(project.id)
