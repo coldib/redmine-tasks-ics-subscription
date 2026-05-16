@@ -6,6 +6,9 @@ A Redmine plugin that exposes assigned issues as a read-only ICS feed. Each user
 
 ---
 
+**Click on the Image to start the GIF**
+![Set Up Thunderbird](setup_thunderbird.gif)
+![Set Up Thunderbird](setup_outlook.gif)
 ## Endpoints
 
 | Endpoint | Format | Use when |
