@@ -59,7 +59,7 @@ module RedmineTasksIcsSubscription
       lines << "URL:#{issue_url(issue)}"
 
       if issue.description.present?
-        lines << prop('DESCRIPTION', escape_text("#{issue_url(issue)}") + " \\n\\n" + escape_text("#{issue.description}"))
+        lines << prop('DESCRIPTION', escape_text("#{issue_url(issue)}") + "\\n\\n" + escape_text("#{issue.description}"))
       else
         lines << "DESCRIPTION:#{issue_url(issue)}"
       end
